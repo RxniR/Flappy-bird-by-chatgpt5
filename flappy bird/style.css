@@ -1,7 +1,6 @@
     /*
       Flappy Bird – Full Implementation
       ---------------------------------
-      - Single file, no external assets
       - Responsive, pixel-perfect scaling
       - Start screen, gameplay, pause, game over
       - Score + persistent high score via localStorage
@@ -242,4 +241,5 @@
   white-space: nowrap;
   padding-left: 4px;
 }
+
 
