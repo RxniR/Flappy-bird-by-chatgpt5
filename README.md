@@ -51,9 +51,10 @@ Cheats can be toggled on/off unless otherwise noted.
 
 ## 📦 Installation
 
-1. Clone or download this repository.
-2. Open `index.html` (or `flappy bird.html` if named that) in your browser.
-3. Play immediately — no installation or server required.
+1. Clone or download script.js, style.css and flappy bird.html.
+2. Make sure all three files are in the same folder.
+3. Open `flappy bird.html` in your browser.
+4. Play!
 
 ---
 
