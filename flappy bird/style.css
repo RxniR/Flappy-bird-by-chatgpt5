@@ -1,0 +1,244 @@
+    /*
+      Flappy Bird – Full Implementation
+      ---------------------------------
+      - Single file, no external assets
+      - Responsive, pixel-perfect scaling
+      - Start screen, gameplay, pause, game over
+      - Score + persistent high score via localStorage
+      - Day/Night cycle, parallax background
+      - Keyboard, mouse, and touch controls
+      - Simple synthesized SFX (Web Audio API)
+      - Clean code with lots of comments (hundreds of lines, no omissions)
+
+      Author: ChatGPT (GPT‑5 Thinking)
+      Date: 2025-08-13
+    */
+
+    :root {
+      --bg: #0e1320; /* Fallback page bg while canvas loads */
+      --ui: #141a2a;
+      --ui-2: #0f1420;
+      --text: #dbe3ff;
+      --muted: #98a2b3;
+      --accent: #72e5ff;
+      --accent-2: #ffce5a;
+      --danger: #ff6363;
+      --ok: #37d67a;
+      --shadow: rgba(0,0,0,0.25);
+    }
+
+    html, body {
+      height: 100%;
+      background: radial-gradient(1200px 800px at 50% -20%, #1f2a44 0%, #0e1320 55%, #090d18 100%) fixed;
+      margin: 0;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+                   Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow: hidden;
+    }
+
+    .wrap {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100%;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 10px 16px;
+      position: sticky;
+      top: 0;
+      background: linear-gradient(180deg, rgba(9,13,24,0.88) 0%, rgba(9,13,24,0.6) 100%);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      z-index: 5;
+    }
+
+    header .title {
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    #game-ui {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+    }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: #0c1020;
+      background: linear-gradient(180deg, #a9f3ff, #72e5ff 60%, #4cd3ef 100%);
+      box-shadow: 0 6px 16px var(--shadow), inset 0 0 0 1px rgba(255,255,255,0.6);
+      cursor: pointer;
+      transition: transform 0.08s ease, filter 0.2s ease;
+    }
+    .btn:hover { filter: brightness(1.05); }
+    .btn:active { transform: translateY(1px) scale(0.99); }
+
+    .btn.secondary {
+      color: var(--text);
+      background: linear-gradient(180deg, #26304a, #1a2238 60%, #12192b 100%);
+      box-shadow: 0 6px 16px var(--shadow), inset 0 0 0 1px rgba(255,255,255,0.08);
+    }
+
+    .btn.warn {
+      background: linear-gradient(180deg, #ffd991, #ffce5a 60%, #ffbb33 100%);
+    }
+
+    .pane {
+      max-width: 1100px;
+      width: 100%;
+      margin: 16px auto;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .card {
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(20,26,42,0.8), rgba(15,20,32,0.9));
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.35);
+      overflow: hidden;
+    }
+
+    .card .header {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .card .body {
+      padding: 10px;
+    }
+
+    .hud {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .label {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .value {
+      font-weight: 700;
+      letter-spacing: 0.6px;
+    }
+
+ .canvas-wrap {
+      position: relative;
+      width: auto; /* JS will size this to preserve 9:16 without distortion */
+      height: auto; /* JS will size this to preserve 9:16 without distortion */
+      background: #5dc2ff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+      margin: 0 auto; /* center horizontally */
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      image-rendering: pixelated; /* crisp look */
+      touch-action: none; /* prevent browser gestures while playing */
+      background: transparent; /* actual backdrop is painted by JS */
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      pointer-events: none; /* allow clicks to canvas */
+    }
+
+    .overlay .panel {
+      pointer-events: auto; /* re-enable on panel */
+      background: rgba(9,13,24,0.72);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 18px 18px 14px;
+      text-align: center;
+      max-width: 90%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .overlay h1, .overlay h2, .overlay h3 {
+      margin: 4px 0 8px;
+    }
+
+    .kbd {
+      display: inline-block;
+      border-radius: 6px;
+      padding: 2px 6px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.06);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+    }
+
+    footer {
+      padding: 10px 16px 24px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    /* Mobile safe area */
+    @supports(padding:max(0px)) {
+      header, footer { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+    }
+    .cheat-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto; /* push to the right end of header row */
+  flex-wrap: nowrap;
+}
+
+.cheat-input {
+  width: 120px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: linear-gradient(180deg, #0f1420, #0b1020);
+  color: var(--text);
+  outline: none;
+  font-size: 14px;
+}
+
+.cheat-input::placeholder { color: #94a3b8; }
+
+.cheat-apply {
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.cheat-status {
+  font-size: 12px;
+  color: var(--accent);
+  white-space: nowrap;
+  padding-left: 4px;
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flappy Bird – Full Vanilla JS</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title">🐤 Flappy Bird – Full Vanilla JS</div>
+    <div id="game-ui">
+  <button class="btn" id="playBtn" title="Start / Restart (Space)">Play</button>
+  <button class="btn secondary" id="pauseBtn" title="Pause/Resume (P)">Pause</button>
+  <button class="btn secondary" id="muteBtn" title="Toggle Sound (M)">Mute</button>
+  <button class="btn warn" id="resetBtn" title="Reset High Score">Reset High Score</button>
+  <div class="cheat-box" aria-label="Cheat codes">
+    <input id="cheatInput" class="cheat-input" inputmode="numeric" pattern="[0-9]*"
+           autocomplete="off" placeholder="Cheat code…" aria-label="Enter cheat code" />
+    <button class="btn secondary cheat-apply" id="cheatApply" title="Apply cheat">Apply</button>
+    <span id="cheatStatus" class="cheat-status" aria-live="polite"></span>
+  </div>
+</div>
+  </header>
+
+  <main class="pane">
+    <section class="card">
+      <div class="header">
+        <div class="hud">
+          <div><span class="label">Score</span> <span class="value" id="scoreVal">0</span></div>
+          <div><span class="label">Best</span> <span class="value" id="bestVal">0</span></div>
+          <div><span class="label">Status</span> <span class="value" id="statusVal">Ready</span></div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="canvas-wrap">
+          <canvas id="game" width="432" height="768" aria-label="Flappy Bird Game Canvas" role="img"></canvas>
+          <div class="overlay" id="overlay">
+            <div class="panel" id="panel-start">
+              <h2>Tap / Click / Press <span class="kbd">Space</span></h2>
+              <p>Flap to fly through the pipes. Avoid collisions. Beat your best score!</p>
+              <p><span class="kbd">P</span> Pause • <span class="kbd">M</span> Mute • <span class="kbd">R</span> Restart</p>
+              <p style="font-size:12px;color:#9fb1d0">No external assets. Everything drawn & coded here.</p>
+              <div style="margin-top:8px"><button class="btn" id="startBtn2">Start</button></div>
+            </div>
+
+            <div class="panel" id="panel-gameover" style="display:none">
+              <h2>Game Over</h2>
+              <p>Score: <span id="finalScore">0</span> • Best: <span id="finalBest">0</span></p>
+              <div style="display:flex; gap:8px; justify-content:center; margin-top:6px">
+                <button class="btn" id="restartBtn">Restart</button>
+                <button class="btn secondary" id="shareBtn">Share</button>
+              </div>
+            </div>
+
+            <div class="panel" id="panel-paused" style="display:none">
+              <h3>Paused</h3>
+              <p>Press <span class="kbd">P</span> or click Resume.</p>
+              <div style="margin-top:6px"><button class="btn" id="resumeBtn">Resume</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:10px; font-size:13px; color:var(--muted)">
+          Controls: <span class="kbd">Space</span>/<span class="kbd">Click</span>/<span class="kbd">Tap</span> to flap • <span class="kbd">P</span> Pause • <span class="kbd">M</span> Mute • <span class="kbd">R</span> Restart • <span class="kbd">D</span> Toggle Debug.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Made by ChatGPT5 👍
+  </footer>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
